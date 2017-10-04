@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<style>
+		*{
+			margin:0;
+			padding:0;
+		}
+		html{
+			overflow: hidden;
+		}
+		body{
+			background-color:rgba(0,0,0,.5);
+		}
+	</style>
+</head>
+<body>
+	<canvas id = "canvas"></canvas>
+	<script>
+		window.onload = init;
+		function init(){
+			var canvas = document.getElementById('canvas');
+			var W = window.innerWidth;
+			var H = window.innerHeight;
+			canvas.height = H;
+			canvas.width = W;
+			var cxt = canvas.getContext('2d');
+			var num = 150;
+			var pos = [];
+			var move = {};
+			document.onmousemove = function(event){
+				var ex = event.clientX;
+				var ey = event.clientY;
+				move.x = ex;
+				move.y = ey;
+			};
+			for(var i = 0;i < num;i++){
+				pos[i] = {x:Math.random()*W,y:Math.random()*H,mX:Math.random()*-1,mY:Math.random()-1};
+				circle(pos[i].x,pos[i].y);
+			};
+
+			(function animation(){
+				cxt.clearRect(0,0,W,H);
+				for(var i = 0;i < num;i++){
+					pos[i].x += pos[i].mX;
+					pos[i].y += pos[i].mY;
+					if(pos[i].x>W || pos[i].x<0){
+						pos[i].mX =  -pos[i].mX;
+					};
+					if(pos[i].y>H || pos[i].y<0){
+						pos[i].mY =  -pos[i].mY;
+					};
+
+					circle(pos[i].x,pos[i].y)
+					
+					for(var j=0;j<num;j++){
+						if((pos[j].x-pos[i].x)*(pos[j].x-pos[i].x)+(pos[j].y-pos[i].y)*(pos[j].y-pos[i].y)<=80*80) {
+							line(pos[i].x,pos[i].y,pos[j].x,pos[j].y);  } //判断2点间的距离 距离足够就画线
+
+						if((pos[j].x-move.x)*(pos[j].x-move.x)+(pos[j].y-move.y)*(pos[j].y-move.y)<=100*100){
+							line(move.x,move.y,pos[j].x,pos[j].y)	} //判断鼠标与点之间的距离 画线
+					}	
+				}
+				window.requestAnimationFrame(animation)
+		 	})();
+
+			function line(x1,y1,x2,y2){
+				cxt.save();
+				cxt.beginPath();
+				cxt.strokeStyle = 'white';
+				cxt.moveTo(x1,y1);
+				cxt.lineTo(x2,y2);
+				cxt.stroke();
+				cxt.restore();
+			};
+			function circle(x,y){
+				cxt.save();
+				cxt.beginPath();
+				cxt.fillStyle='black';
+				cxt.arc(x,y,1,0,2*Math.PI);
+				cxt.fill();
+				cxt.closePath();
+				cxt.restore();
+			}
+		};
+	</script>
+</body>
+</html>
